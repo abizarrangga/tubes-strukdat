@@ -28,6 +28,20 @@ body {
     overflow-x: hidden;
 }
 
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    min-height: 48px;
+}
+
 .app-background {
     width: 100%;
     max-width: 1200px; 
@@ -710,3 +724,341 @@ body {
     transition: all 0.2s;
 }
 .btn-bawah-abu:hover { background-color: rgba(255,255,255,0.2); }
+
+/* --- RESPONSIVE ANDROID --- */
+@media (max-width: 900px) {
+    body {
+        align-items: flex-start;
+    }
+
+    .app-background {
+        max-width: none;
+        min-height: 100vh;
+        padding: 28px 18px;
+        align-items: flex-start;
+    }
+
+    .container {
+        gap: 26px;
+    }
+
+    .header-kuis {
+        width: 100%;
+        gap: 10px;
+        flex-wrap: wrap;
+        text-align: center;
+    }
+
+    .judul-utama {
+        font-size: clamp(28px, 9vw, 48px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .icon-trophy {
+        font-size: clamp(28px, 9vw, 44px);
+    }
+
+    .label-form,
+    .sub-judul {
+        font-size: clamp(18px, 5vw, 24px);
+        text-align: center;
+    }
+
+    .custom-input {
+        max-width: 100%;
+        border-radius: 20px;
+        padding: 16px 18px;
+        font-size: 18px;
+    }
+
+    .character-grid {
+        width: 100%;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .character-item {
+        width: 100%;
+        max-width: 74px;
+        height: auto;
+        aspect-ratio: 1;
+        justify-self: center;
+        border-width: 3px;
+    }
+
+    .animal-emoji {
+        font-size: clamp(28px, 9vw, 42px);
+    }
+
+    .kelas-grid,
+    .mapel-grid {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+        gap: 16px;
+    }
+
+    .card-kelas,
+    .card-mapel {
+        border-radius: 18px;
+        padding: 24px 18px;
+        gap: 12px;
+    }
+
+    .circle-indicator {
+        width: 46px;
+        height: 46px;
+    }
+
+    .nama-kelas,
+    .nama-mapel {
+        font-size: 22px;
+    }
+
+    .detail-soal,
+    .sub-detail {
+        font-size: 16px;
+    }
+
+    .icon-mapel {
+        font-size: 42px;
+        margin-bottom: 0;
+    }
+
+    .text-icon {
+        font-size: 36px;
+    }
+
+    .btn-petualangan {
+        width: 100%;
+        max-width: 520px;
+        border-radius: 20px;
+        padding: 15px 18px;
+        font-size: 17px;
+        letter-spacing: 0;
+        text-align: center;
+    }
+
+    .kuis-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 640px;
+    }
+
+    .kuis-layout main,
+    .sidebar-kuis {
+        width: 100%;
+    }
+
+    .box-soal {
+        min-height: 0;
+        border-radius: 20px;
+        padding: 24px 18px;
+    }
+
+    .nomor-soal {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .teks-pertanyaan {
+        font-size: clamp(22px, 6vw, 30px);
+        line-height: 1.25;
+        margin-bottom: 24px;
+    }
+
+    .opsi-item {
+        min-height: 56px;
+        border-radius: 18px;
+        padding: 14px 16px;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 17px;
+        line-height: 1.3;
+    }
+
+    .bullet-radio {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        margin-top: 1px;
+    }
+
+    .footer-nav {
+        width: 100%;
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .btn-nav {
+        flex: 1;
+        justify-content: center;
+        border-radius: 16px;
+        background-color: rgba(255,255,255,0.07);
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+
+    .sidebar-kuis {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .profil-peserta {
+        grid-column: 1 / -1;
+    }
+
+    .widget-kuis {
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .char-display {
+        font-size: 52px;
+    }
+
+    .name-display {
+        font-size: 24px;
+        overflow-wrap: anywhere;
+    }
+
+    .info-label {
+        font-size: 14px;
+    }
+
+    .info-value {
+        font-size: 26px;
+    }
+
+    .hasil-container,
+    .leaderboard-container {
+        max-width: 640px;
+        border-radius: 22px;
+        padding: 24px 16px;
+    }
+
+    .icon-terompet {
+        font-size: 48px;
+    }
+
+    .label-skor-kamu {
+        font-size: 22px;
+    }
+
+    .skor-besar {
+        font-size: clamp(64px, 20vw, 92px);
+    }
+
+    .row-rekap {
+        border-radius: 16px;
+        padding: 15px;
+        gap: 10px;
+        font-size: 16px;
+        align-items: flex-start;
+    }
+
+    .rekap-kiri,
+    .rekap-kanan {
+        line-height: 1.25;
+    }
+
+    .btn-wrapper-hasil,
+    .wrapper-nav-bawah {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-hasil,
+    .btn-bawah-biru,
+    .btn-bawah-abu {
+        width: 100%;
+        border-radius: 18px;
+        padding: 14px 18px;
+        font-size: 16px;
+        justify-content: center;
+    }
+
+    .sub-judul-leaderboard {
+        margin-top: -10px;
+        margin-bottom: 22px;
+        font-size: 16px;
+    }
+
+    .baris-header {
+        display: none;
+    }
+
+    .baris-pemain {
+        grid-template-columns: auto 1fr auto;
+        gap: 8px 12px;
+        border-radius: 16px;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .kol-rank {
+        grid-row: span 2;
+        align-self: center;
+        min-width: 42px;
+        font-size: 24px;
+    }
+
+    .kol-name {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .kol-char {
+        justify-content: flex-end;
+        font-size: 28px;
+    }
+
+    .kol-skor {
+        font-size: 22px;
+    }
+
+    .kol-level {
+        padding: 5px 10px;
+        border-radius: 14px;
+        font-size: 13px;
+    }
+
+    .kol-mapel {
+        grid-column: 2 / -1;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 430px) {
+    .app-background {
+        padding: 22px 12px;
+    }
+
+    .container {
+        gap: 22px;
+    }
+
+    .character-grid {
+        gap: 9px;
+    }
+
+    .character-item {
+        max-width: 62px;
+    }
+
+    .sidebar-kuis {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-nav {
+        flex-direction: column;
+    }
+
+    .row-rekap {
+        flex-direction: column;
+    }
+}

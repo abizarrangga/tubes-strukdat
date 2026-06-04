@@ -1,127 +1,361 @@
-﻿# QuizStack (Quiz Bintang)
+# QuizStack / Quiz Bintang
 
-QuizStack atau Quiz Bintang adalah aplikasi kuis edukasi berbasis Web Frontend murni. Aplikasi ini berjalan hanya dengan HTML, CSS, dan JavaScript tanpa backend. Seluruh pilihan pemain, hasil kuis, dan data leaderboard disimpan di `localStorage` browser.
+QuizStack atau Quiz Bintang adalah aplikasi kuis edukasi berbasis web frontend yang dibuat menggunakan HTML, CSS, dan JavaScript. Aplikasi ini tidak memakai backend, sehingga seluruh data pemain, pilihan kuis, hasil skor, dan leaderboard disimpan di browser menggunakan `localStorage`.
 
-## Fitur Utama
+Proyek ini dibuat sebagai tugas besar Struktur Data. Fokus utama implementasinya bukan hanya membuat kuis berjalan, tetapi juga menunjukkan penggunaan struktur data manual di dalam alur aplikasi, yaitu:
 
-- Pemain mengisi nama dan memilih karakter.
-- Pemain memilih fase kelas dan mata pelajaran.
-- Kuis berjalan dengan sistem antrean soal.
-- Tombol sebelumnya memakai konsep undo berbasis Stack.
-- Skor akhir dihitung dari jawaban yang tersimpan pada node Linked List.
-- Leaderboard hanya berisi data real dari `localStorage`, tanpa dummy awal.
-- Statistik menampilkan ringkasan percobaan, rata-rata skor, skor tertinggi, dan tombol kerjakan lagi.
-- Tombol kerjakan lagi di halaman statistik langsung mengulang kuis dengan fase dan mata pelajaran yang sama.
+- Linked List untuk mengelola bank soal kuis.
+- Queue/Deque untuk mengatur antrean soal.
+- Stack untuk fitur backtracking atau undo jawaban.
+- Bubble Sort manual untuk mengurutkan leaderboard.
 
-## Struktur Proyek
+## Struktur File
 
 ```text
 QuizStack/
-├── index.html          # Halaman awal: input nama dan pilih karakter
-├── pilih-kelas.html    # Halaman pilih fase atau kelas
-├── pilih-mapel.html    # Halaman pilih mata pelajaran
-├── kuis.html           # Halaman pengerjaan kuis dan inti struktur data
-├── leaderboard.html    # Halaman peringkat real-time dari localStorage
-├── statistik.html      # Halaman hasil skor, statistik, dan tombol kerjakan lagi
-├── data-karakter.js    # Data karakter pemain
-├── data-soal.js        # Bank soal mentah per fase dan mapel
-├── script.js           # Engine lama/alternatif dari versi proyek sebelumnya
-└── style.css           # Tampilan UI aplikasi
+|-- index.html          # Halaman awal: input nama dan pilih karakter
+|-- pilih-kelas.html    # Halaman pilih kelas/fase
+|-- pilih-mapel.html    # Halaman pilih mata pelajaran
+|-- kuis.html           # Halaman kuis dan implementasi Linked List, Queue/Deque, Stack
+|-- statistik.html      # Halaman hasil/statistik setelah kuis selesai
+|-- leaderboard.html    # Halaman peringkat dan implementasi Bubble Sort manual
+|-- data-karakter.js    # Data karakter pemain
+|-- data-soal.js        # Data mentah bank soal
+|-- script.js           # File engine versi lama/alternatif
+|-- style.css           # Tampilan aplikasi, termasuk responsive Android
+`-- README.md           # Dokumentasi tugas besar
 ```
 
-## Alur Penyimpanan Data
+Catatan: implementasi struktur data yang aktif dipakai aplikasi berada di `kuis.html` dan `leaderboard.html`.
 
-Aplikasi memakai `localStorage` agar tetap dapat berjalan tanpa backend.
+## Alur Aplikasi
 
-Data penting yang disimpan:
+1. Pemain membuka `index.html`, mengisi nama, dan memilih karakter.
+2. Pemain memilih kelas/fase di `pilih-kelas.html`.
+3. Pemain memilih mata pelajaran di `pilih-mapel.html`.
+4. Kuis berjalan di `kuis.html`.
+5. Setelah semua soal selesai atau waktu habis, pemain diarahkan ke `statistik.html`.
+6. Skor pemain disimpan ke `localStorage`.
+7. Leaderboard di `leaderboard.html` membaca data skor, mengurutkannya dengan Bubble Sort manual, lalu menampilkan peringkat tertinggi.
 
-- `player_name`: nama pemain.
-- `player_char_id`: karakter pemain.
-- `selected_fase`: fase atau kelas yang dipilih.
-- `selected_mapel`: mata pelajaran yang dipilih.
-- `skor_akhir`: skor akhir kuis terakhir.
-- `benar_hitung`: jumlah jawaban benar kuis terakhir.
-- `durasi_detik`: waktu pengerjaan kuis terakhir.
-- `global_leaderboard`: array skor semua percobaan pemain.
+## Validasi Struktur Data
 
-## Linked List pada Bank Soal
+Berdasarkan kode yang dipakai, implementasi struktur data pada proyek ini sudah sesuai secara teori dengan kriteria tugas besar:
 
-Linked List digunakan di `kuis.html` untuk menyimpan bank soal yang sedang dikerjakan. Setiap soal diubah menjadi objek `NodeSoal` yang memiliki properti `next` sebagai pointer ke soal berikutnya.
+| Struktur Data | Status | File Utama | Kesimpulan |
+| --- | --- | --- | --- |
+| Linked List | Valid | `kuis.html` | Bank soal kuis dimuat ke node yang saling terhubung melalui pointer `next`. |
+| Queue/Deque | Valid | `kuis.html` | Soal maju memakai FIFO melalui `dequeue()`, dan undo memakai `enqueueFront()`. |
+| Stack | Valid | `kuis.html` | Riwayat soal yang sudah dijawab disimpan dengan `push()` dan diambil kembali dengan `pop()`. |
+| Bubble Sort Manual | Valid | `leaderboard.html` | Leaderboard diurutkan descending tanpa `.sort()` bawaan JavaScript. |
 
-Secara ilmiah, Linked List adalah struktur data linear yang elemen-elemennya tidak harus berada berurutan di memori. Tiap node menyimpan data dan referensi ke node berikutnya. Pada program ini, Linked List berguna karena jawaban pemain dapat langsung disimpan pada node soal aktif melalui properti `jawabanUser`.
+Pencarian pada kode juga menunjukkan tidak ada penggunaan `.sort()` bawaan untuk mengurutkan leaderboard.
 
-Operasi yang digunakan:
+## 1. Linked List untuk Bank Soal
 
-- `insertLast()`: menambahkan soal baru di akhir list.
-- traversal dari `head`: menelusuri semua node soal.
-- update `jawabanUser`: menyimpan jawaban pemain langsung di node.
-- traversal final: menghitung jumlah jawaban benar setelah kuis selesai.
+Linked List adalah struktur data linear yang terdiri dari node-node. Setiap node menyimpan data dan pointer menuju node berikutnya. Pada aplikasi ini, setiap soal diubah menjadi objek `NodeSoal`, lalu dimasukkan ke dalam `LinkedListBankSoal`.
 
-## Queue dan Deque pada Antrean Soal
+Linked List dipakai untuk mengelola bank soal kuis secara dinamis. Artinya, data soal tidak hanya dibaca sebagai array biasa, tetapi diubah menjadi rangkaian node. Jawaban user juga disimpan langsung pada node soal melalui properti `jawabanUser`.
 
-Queue digunakan untuk mengatur urutan soal. Prinsip Queue adalah FIFO atau First In First Out, artinya soal yang masuk lebih dulu akan keluar lebih dulu.
-
-Program memakai bentuk Deque atau Double Ended Queue, yaitu antrean yang dapat menerima operasi dari depan dan belakang. Bagian belakang dipakai untuk memasukkan semua soal saat awal kuis, sedangkan bagian depan dipakai saat pemain menekan tombol sebelumnya.
-
-Operasi yang digunakan:
-
-- `enqueueRear()`: memasukkan soal ke belakang antrean saat kuis dimulai.
-- `dequeue()`: mengambil soal dari depan antrean untuk ditampilkan.
-- `enqueueFront()`: mengembalikan soal ke depan antrean saat undo.
-
-Dengan Deque, halaman kuis dapat kembali ke soal sebelumnya tanpa membangun ulang seluruh array soal.
-
-## Stack pada Fitur Undo
-
-Stack digunakan untuk menyimpan riwayat soal yang sudah dilewati pemain. Stack bekerja dengan prinsip LIFO atau Last In First Out, yaitu data terakhir yang masuk akan menjadi data pertama yang keluar.
-
-Pada program ini, setiap kali pemain menekan tombol selanjutnya, soal aktif dimasukkan ke Stack dengan operasi `push()`. Saat tombol sebelumnya ditekan, soal terakhir dikeluarkan dari Stack dengan operasi `pop()`.
-
-Operasi yang digunakan:
-
-- `push()`: menyimpan soal aktif ke riwayat undo.
-- `pop()`: mengambil soal terakhir dari riwayat undo.
-- traversal Stack: menghitung skor live dari soal yang sudah dikonfirmasi.
-
-Stack cocok untuk undo karena perilaku undo selalu mengambil langkah terakhir terlebih dahulu.
-
-## Bubble Sort Manual pada Leaderboard dan Statistik
-
-Bubble Sort digunakan untuk mengurutkan data skor secara descending dari skor tertinggi ke skor terendah. Program sengaja tidak memakai `.sort()` bawaan JavaScript agar algoritma struktur data terlihat manual.
-
-Secara ilmiah, Bubble Sort adalah algoritma sorting berbasis perbandingan dua elemen bertetangga. Jika urutannya salah, kedua elemen ditukar. Proses ini diulang beberapa pass sampai data terurut.
-
-Karakteristik Bubble Sort:
-
-- Kompleksitas waktu rata-rata dan terburuk: O(n^2).
-- Kompleksitas memori tambahan: O(1), karena hanya memakai variabel sementara `temp`.
-- Mudah dipahami dan cocok untuk demonstrasi konsep sorting manual.
-
-Pada `leaderboard.html`, data `global_leaderboard` difilter terlebih dahulu berdasarkan `selected_fase`, lalu Bubble Sort mengurutkan 10 skor tertinggi khusus kelas/fase tersebut. Pada `statistik.html`, Bubble Sort dipakai untuk mengambil skor tertinggi dari seluruh percobaan.
-
-## Revisi Alur Tombol
-
-### leaderboard.html
-
-- Data dummy dikosongkan dengan `DEFAULT_LEADERBOARD = []`.
-- Leaderboard hanya menampilkan data dari `global_leaderboard` di `localStorage` untuk kelas/fase yang sedang dipilih.
-- Tombol `STATISTIK` mengarah ke `statistik.html`.
-- Tombol `MAIN LAGI` diganti menjadi `KEMBALI`.
-- Tombol `KEMBALI` menuju `index.html` dan hanya menghapus pilihan kuis sementara, bukan database skor leaderboard.
-
-### statistik.html
-
-- Halaman statistik menjadi satu-satunya halaman hasil setelah kuis selesai.
-- Tombol `KERJAKAN LAGI` ditempatkan di halaman statistik.
-- Tombol tersebut menghapus hasil kuis sementara, tetapi tetap mempertahankan `selected_fase`, `selected_mapel`, `player_name`, dan `player_char_id`.
-- Karena data fase dan mapel tetap tersimpan, pemain langsung diarahkan ke `kuis.html` untuk mengerjakan ulang kuis yang sama.
-
-## Catatan Presentasi Struktur Data
-
-Di dalam blok `<script>` pada `kuis.html`, `leaderboard.html`, dan `statistik.html` sudah ditambahkan komentar mencolok seperti:
+Kode node soal:
 
 ```js
-// ======= [LOGIKA STRUKTUR DATA: STACK PUSH - BUAT NODE BARU] =======
+class NodeSoal {
+    constructor(soalMentah) {
+        this.id = soalMentah.id;
+        this.teks = soalMentah.teks;
+        this.pilihan = soalMentah.pilihan;
+        this.kunci = soalMentah.kunci;
+        this.jawabanUser = null;
+        this.next = null;
+    }
+}
 ```
 
-Komentar tersebut bisa digunakan saat presentasi untuk menunjukkan bagian program yang benar-benar melakukan operasi Linked List, Queue/Deque, Stack, dan Bubble Sort.
+Kode Linked List:
+
+```js
+class LinkedListBankSoal {
+    constructor() {
+        this.head = null;
+        this.size = 0;
+    }
+
+    insertLast(soalMentah) {
+        const node = new NodeSoal(soalMentah);
+        if (!this.head) {
+            this.head = node;
+        } else {
+            let curr = this.head;
+            while (curr.next) curr = curr.next;
+            curr.next = node;
+        }
+        this.size++;
+    }
+
+    clear() {
+        this.head = null;
+        this.size = 0;
+    }
+}
+```
+
+Pemakaian Linked List saat memuat soal:
+
+```js
+sumberData.forEach(item => {
+    bankSoal.insertLast(item);
+});
+```
+
+Traversal Linked List untuk memasukkan node soal ke antrean:
+
+```js
+let ptr = bankSoal.head;
+while (ptr) {
+    antreanKuis.enqueueRear(ptr);
+    ptr = ptr.next;
+}
+```
+
+Traversal Linked List untuk menghitung skor akhir:
+
+```js
+let benar = 0;
+let curr = bankSoal.head;
+while (curr) {
+    if (curr.jawabanUser === curr.kunci) benar++;
+    curr = curr.next;
+}
+```
+
+Kesimpulan: Linked List sudah benar secara teori karena bank soal aktif dikelola sebagai node berantai, memiliki `head`, memiliki pointer `next`, dapat ditambahkan dengan `insertLast()`, dan dapat ditraversal untuk antrean maupun rekap skor.
+
+## 2. Queue/Deque untuk Antrean Soal
+
+Queue adalah struktur data dengan prinsip FIFO, yaitu First In First Out. Data yang masuk lebih dulu akan keluar lebih dulu. Pada aplikasi kuis, prinsip ini cocok untuk menampilkan soal secara berurutan.
+
+Namun aplikasi juga membutuhkan fitur undo. Karena itu, implementasi yang dipakai adalah Deque, yaitu antrean yang bisa menerima data dari belakang dan depan. Operasi normal memakai `enqueueRear()` dan `dequeue()`, sedangkan undo memakai `enqueueFront()`.
+
+Kode node umum untuk Queue/Deque dan Stack:
+
+```js
+class DSNode {
+    constructor(ptr) {
+        this.data = ptr;
+        this.next = null;
+    }
+}
+```
+
+Kode Deque:
+
+```js
+class DequeAntreanSoal {
+    constructor() {
+        this.front = null;
+        this.rear = null;
+        this.size = 0;
+    }
+
+    enqueueRear(nodeSoalPtr) {
+        const node = new DSNode(nodeSoalPtr);
+        if (!this.rear) {
+            this.front = this.rear = node;
+        } else {
+            this.rear.next = node;
+            this.rear = node;
+        }
+        this.size++;
+    }
+
+    enqueueFront(nodeSoalPtr) {
+        const node = new DSNode(nodeSoalPtr);
+        if (!this.front) {
+            this.front = this.rear = node;
+        } else {
+            node.next = this.front;
+            this.front = node;
+        }
+        this.size++;
+    }
+
+    dequeue() {
+        if (!this.front) return null;
+        const data = this.front.data;
+        this.front = this.front.next;
+        if (!this.front) this.rear = null;
+        this.size--;
+        return data;
+    }
+
+    isEmpty() {
+        return this.size === 0;
+    }
+}
+```
+
+Pemakaian Queue saat soal berjalan maju:
+
+```js
+function tampilkanSoal() {
+    if (antreanKuis.isEmpty()) {
+        selesaikanKuis();
+        return;
+    }
+
+    nomorUrut++;
+    soalAktif = antreanKuis.dequeue();
+}
+```
+
+Pemakaian Deque saat undo:
+
+```js
+antreanKuis.enqueueFront(soalAktif);
+const soalLama = stackUndo.pop();
+antreanKuis.enqueueFront(soalLama);
+```
+
+Kesimpulan: Queue/Deque sudah benar secara teori karena alur maju memakai FIFO melalui `dequeue()` dari depan antrean, sedangkan fitur undo dapat menyelipkan soal kembali ke depan antrean melalui `enqueueFront()`.
+
+## 3. Stack untuk Backtracking/Undo
+
+Stack adalah struktur data dengan prinsip LIFO, yaitu Last In First Out. Data terakhir yang masuk akan menjadi data pertama yang keluar. Prinsip ini cocok untuk fitur undo, karena saat user menekan tombol sebelumnya, aplikasi harus kembali ke soal terakhir yang sudah dilewati.
+
+Pada aplikasi ini, setiap kali user menekan tombol `SELANJUTNYA`, soal aktif dimasukkan ke stack. Saat user menekan tombol `SEBELUMNYA`, soal terakhir dikeluarkan dari stack menggunakan `pop()`.
+
+Kode Stack:
+
+```js
+class StackUndoJawaban {
+    constructor() {
+        this.top = null;
+        this.count = 0;
+    }
+
+    push(nodeSoalPtr) {
+        const node = new DSNode(nodeSoalPtr);
+        node.next = this.top;
+        this.top = node;
+        this.count++;
+    }
+
+    pop() {
+        if (!this.top) return null;
+        const data = this.top.data;
+        this.top = this.top.next;
+        this.count--;
+        return data;
+    }
+
+    isEmpty() {
+        return this.top === null;
+    }
+}
+```
+
+Pemakaian Stack saat tombol selanjutnya ditekan:
+
+```js
+document.getElementById('btn-selanjutnya').onclick = () => {
+    stackUndo.push(soalAktif);
+    hitungSkorLive();
+    tampilkanSoal();
+};
+```
+
+Pemakaian Stack saat tombol sebelumnya ditekan:
+
+```js
+document.getElementById('btn-sebelumnya').onclick = () => {
+    if (stackUndo.isEmpty()) return;
+
+    antreanKuis.enqueueFront(soalAktif);
+    const soalLama = stackUndo.pop();
+
+    hitungSkorLive();
+    nomorUrut -= 2;
+    if (nomorUrut < 0) nomorUrut = 0;
+    soalAktif = null;
+
+    antreanKuis.enqueueFront(soalLama);
+    tampilkanSoal();
+};
+```
+
+Traversal Stack untuk menghitung skor sementara:
+
+```js
+let cursor = stackUndo.top;
+while (cursor) {
+    if (cursor.data.jawabanUser === cursor.data.kunci) skorSementara += 10;
+    cursor = cursor.next;
+}
+```
+
+Kesimpulan: Stack sudah benar secara teori karena riwayat soal yang sudah dijawab disimpan dengan `push()`, lalu riwayat terakhir diambil dengan `pop()` untuk mendukung backtracking/undo.
+
+## 4. Bubble Sort Manual untuk Leaderboard
+
+Bubble Sort adalah algoritma sorting sederhana yang membandingkan dua elemen bersebelahan. Jika urutannya salah, kedua elemen ditukar. Proses ini diulang sampai data terurut.
+
+Pada aplikasi ini, Bubble Sort dipakai untuk mengurutkan skor leaderboard dari tertinggi ke terendah. Implementasinya manual menggunakan perulangan `for`, perbandingan skor, dan variabel sementara `temp`. Kode tidak menggunakan fungsi `.sort()` bawaan JavaScript.
+
+Kode Bubble Sort:
+
+```js
+function urutkanDenganBubbleSort(arr) {
+    let n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j].skor < arr[j + 1].skor) {
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    return arr;
+}
+```
+
+Pemakaian Bubble Sort pada leaderboard:
+
+```js
+const dataTerurut = urutkanDenganBubbleSort(dataGabungan);
+const top10 = dataTerurut.slice(0, 10);
+```
+
+Penjelasan:
+
+- `arr[j].skor < arr[j + 1].skor` berarti jika skor kiri lebih kecil daripada skor kanan, posisinya ditukar.
+- Hasil akhirnya adalah urutan descending, yaitu skor terbesar berada di posisi paling atas.
+- Variabel `temp` dipakai untuk proses pertukaran manual.
+- `.slice(0, 10)` hanya dipakai untuk mengambil 10 data teratas setelah data selesai diurutkan.
+
+Kesimpulan: Bubble Sort sudah benar secara teori karena proses sorting dilakukan manual, mengurutkan skor dari tertinggi ke terendah, dan tidak menggunakan `.sort()` bawaan JavaScript.
+
+## Data yang Disimpan di localStorage
+
+Aplikasi memakai `localStorage` agar dapat berjalan tanpa server. Data yang disimpan:
+
+- `player_name`: nama pemain.
+- `player_char_id`: karakter yang dipilih pemain.
+- `selected_fase`: kelas/fase yang dipilih.
+- `selected_mapel`: mata pelajaran yang dipilih.
+- `skor_akhir`: skor akhir kuis terakhir.
+- `benar_hitung`: jumlah jawaban benar.
+- `durasi_detik`: durasi pengerjaan.
+- `global_leaderboard`: kumpulan data skor pemain untuk leaderboard.
+
+## Kesimpulan Akhir
+
+Implementasi struktur data pada QuizStack sudah sesuai dengan konsep teori:
+
+- Linked List mengelola bank soal aktif sebagai node berantai.
+- Queue/Deque mengatur urutan soal dengan FIFO dan mendukung penyelipan soal ke depan saat undo.
+- Stack menyimpan riwayat soal yang sudah dijawab untuk fitur backtracking.
+- Bubble Sort manual mengurutkan skor leaderboard dari tertinggi ke terendah tanpa `.sort()`.
+
+Dengan demikian, aplikasi ini sudah memenuhi kebutuhan tugas besar Struktur Data sekaligus tetap berjalan sebagai aplikasi kuis web yang dapat digunakan langsung di browser.
