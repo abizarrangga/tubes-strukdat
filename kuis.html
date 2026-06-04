@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bintang - Sedang Mengerjakan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-background">
+        <div class="kuis-layout">
+            <main>
+                <div class="nomor-soal" id="display-progress">Soal 1 / 10</div>
+                <div class="box-soal">
+                    <h2 class="teks-pertanyaan" id="teks-soal">Memuat soal...</h2>
+                    <div class="opsi-container" id="container-opsi"></div>
+                </div>
+
+                <div class="footer-nav">
+                    <button class="btn-nav" id="btn-sebelumnya" disabled>
+                        <span>◀</span> SEBELUMNYA
+                    </button>
+                    <button class="btn-nav" id="btn-selanjutnya" disabled>
+                        SELANJUTNYA <span>▶</span>
+                    </button>
+                </div>
+            </main>
+
+            <aside class="sidebar-kuis">
+                <div class="widget-kuis profil-peserta">
+                    <div class="char-display" id="player-char">🐱</div>
+                    <div class="name-display" id="player-name">Peserta</div>
+                    <p id="display-fase-mapel" style="color:var(--text-gold); font-weight:700; font-size:14pt; margin-top:5px;">KUIS</p>
+                </div>
+
+                <div class="widget-kuis">
+                    <div class="info-label">⏱️ Waktu Tersisa</div>
+                    <div class="info-value" id="timer">05:00</div>
+                </div>
+
+                <div class="widget-kuis">
+                    <div class="info-label">⭐ Skor Saat Ini</div>
+                    <div class="info-value" id="skor-live">0</div>
+                </div>
+
+                <div class="widget-kuis" style="opacity: 0.5;">
+                    <div class="info-label">Mode</div>
+                    <div class="info-value">Undo</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="data-karakter.js"></script>
+    <script src="data-soal.js"></script>
+
+    <script>
+        class NodeSoal {
+            constructor(soalMentah) {
+                this.id = soalMentah.id;
+                this.teks = soalMentah.teks;
+                this.pilihan = soalMentah.pilihan;
+                this.kunci = soalMentah.kunci;
+                this.jawabanUser = null;
+                this.next = null;
+            }
+        }
+
+        class LinkedListBankSoal {
+            constructor() {
+                this.head = null;
+                this.size = 0;
+            }
+
+            insertLast(soalMentah) {
+                // ======= [LOGIKA STRUKTUR DATA: LINKED LIST INSERT LAST - BUAT NODE BARU] =======
+                const node = new NodeSoal(soalMentah);
+                if (!this.head) {
+                    // ======= [LOGIKA STRUKTUR DATA: LINKED LIST HEAD DIISI NODE PERTAMA] =======
+                    this.head = node;
+                } else {
+                    // ======= [LOGIKA STRUKTUR DATA: LINKED LIST TRAVERSAL MULAI DARI HEAD] =======
+                    let curr = this.head;
+                    // ======= [LOGIKA STRUKTUR DATA: LINKED LIST CEK POINTER NEXT SAMPAI TAIL] =======
+                    while (curr.next) curr = curr.next;
+                    // ======= [LOGIKA STRUKTUR DATA: LINKED LIST SAMBUNG TAIL.NEXT KE NODE BARU] =======
+                    curr.next = node;
+                }
+                // ======= [LOGIKA STRUKTUR DATA: LINKED LIST UPDATE UKURAN LIST] =======
+                this.size++;
+            }
+
+            clear() {
+                // ======= [LOGIKA STRUKTUR DATA: LINKED LIST CLEAR HEAD] =======
+                this.head = null;
+                // ======= [LOGIKA STRUKTUR DATA: LINKED LIST RESET SIZE] =======
+                this.size = 0;
+            }
+        }
+
+        class DSNode {
+            constructor(ptr) {
+                this.data = ptr;
+                this.next = null;
+            }
+        }
+
+        class DequeAntreanSoal {
+            constructor() {
+                this.front = null;
+                this.rear = null;
+                this.size = 0;
+            }
+
+            enqueueRear(nodeSoalPtr) {
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE ENQUEUE REAR - BUAT NODE BARU] =======
+                const node = new DSNode(nodeSoalPtr);
+                if (!this.rear) {
+                    // ======= [LOGIKA STRUKTUR DATA: QUEUE FRONT DAN REAR DIISI NODE PERTAMA] =======
+                    this.front = this.rear = node;
+                } else {
+                    // ======= [LOGIKA STRUKTUR DATA: QUEUE SAMBUNG REAR.NEXT KE NODE BARU] =======
+                    this.rear.next = node;
+                    // ======= [LOGIKA STRUKTUR DATA: QUEUE GESER POINTER REAR] =======
+                    this.rear = node;
+                }
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE UPDATE SIZE] =======
+                this.size++;
+            }
+
+            enqueueFront(nodeSoalPtr) {
+                // ======= [LOGIKA STRUKTUR DATA: DEQUE ENQUEUE FRONT - BUAT NODE BARU] =======
+                const node = new DSNode(nodeSoalPtr);
+                if (!this.front) {
+                    // ======= [LOGIKA STRUKTUR DATA: DEQUE FRONT DAN REAR DIISI NODE PERTAMA] =======
+                    this.front = this.rear = node;
+                } else {
+                    // ======= [LOGIKA STRUKTUR DATA: DEQUE NODE BARU MENUNJUK FRONT LAMA] =======
+                    node.next = this.front;
+                    // ======= [LOGIKA STRUKTUR DATA: DEQUE GESER POINTER FRONT KE NODE BARU] =======
+                    this.front = node;
+                }
+                // ======= [LOGIKA STRUKTUR DATA: DEQUE UPDATE SIZE] =======
+                this.size++;
+            }
+
+            dequeue() {
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE - CEK KOSONG] =======
+                if (!this.front) return null;
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE - AMBIL DATA DARI FRONT] =======
+                const data = this.front.data;
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE - GESER FRONT KE NODE BERIKUTNYA] =======
+                this.front = this.front.next;
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE - RESET REAR JIKA ANTREAN HABIS] =======
+                if (!this.front) this.rear = null;
+                // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE - UPDATE SIZE] =======
+                this.size--;
+                return data;
+            }
+
+            isEmpty() {
+                return this.size === 0;
+            }
+        }
+
+        class StackUndoJawaban {
+            constructor() {
+                this.top = null;
+                this.count = 0;
+            }
+
+            push(nodeSoalPtr) {
+                // ======= [LOGIKA STRUKTUR DATA: STACK PUSH - BUAT NODE BARU] =======
+                const node = new DSNode(nodeSoalPtr);
+                // ======= [LOGIKA STRUKTUR DATA: STACK PUSH - NODE BARU MENUNJUK TOP LAMA] =======
+                node.next = this.top;
+                // ======= [LOGIKA STRUKTUR DATA: STACK PUSH - TOP DIGESER KE NODE BARU] =======
+                this.top = node;
+                // ======= [LOGIKA STRUKTUR DATA: STACK PUSH - UPDATE COUNT] =======
+                this.count++;
+            }
+
+            pop() {
+                // ======= [LOGIKA STRUKTUR DATA: STACK POP - CEK KOSONG] =======
+                if (!this.top) return null;
+                // ======= [LOGIKA STRUKTUR DATA: STACK POP - AMBIL DATA DARI TOP] =======
+                const data = this.top.data;
+                // ======= [LOGIKA STRUKTUR DATA: STACK POP - TOP DIGESER KE NODE BERIKUTNYA] =======
+                this.top = this.top.next;
+                // ======= [LOGIKA STRUKTUR DATA: STACK POP - UPDATE COUNT] =======
+                this.count--;
+                return data;
+            }
+
+            isEmpty() {
+                return this.top === null;
+            }
+        }
+
+        const fase = localStorage.getItem('selected_fase') || '1-2';
+        const mapelTersimpan = localStorage.getItem('selected_mapel') || 'MTK';
+        const nama = localStorage.getItem('player_name') || 'Petualang';
+        const charId = localStorage.getItem('player_char_id') || 'kucing';
+
+        const normalisasiMapel = {
+            'Matematika': 'MTK',
+            'MTK': 'MTK',
+            'Umum': 'PENGETAHUAN_UMUM',
+            'Pengetahuan Umum': 'PENGETAHUAN_UMUM',
+            'PENGETAHUAN_UMUM': 'PENGETAHUAN_UMUM',
+            'Inggris': 'INGGRIS',
+            'Bahasa Inggris': 'INGGRIS',
+            'INGGRIS': 'INGGRIS',
+            'IPAS': 'IPAS'
+        };
+        const labelMapel = {
+            'MTK': 'Matematika',
+            'PENGETAHUAN_UMUM': 'Pengetahuan Umum',
+            'INGGRIS': 'Bahasa Inggris',
+            'IPAS': 'IPAS'
+        };
+        const mapel = normalisasiMapel[mapelTersimpan] || mapelTersimpan;
+
+        document.getElementById('player-name').innerText = nama;
+        document.getElementById('display-fase-mapel').innerText = `Fase ${fase} - ${labelMapel[mapel] || mapel}`;
+        const charData = DAFTAR_KARAKTER.find(c => c.id === charId);
+        document.getElementById('player-char').innerText = charData ? charData.emoji : '🐱';
+
+        const bankSoal = new LinkedListBankSoal();
+        const antreanKuis = new DequeAntreanSoal();
+        const stackUndo = new StackUndoJawaban();
+
+        let soalAktif = null;
+        let skor = 0;
+        let nomorUrut = 0;
+        let waktu = 300;
+        let kuisSudahSelesai = false;
+
+        const sumberData = (BANK_SOAL_MENTAH[fase] && BANK_SOAL_MENTAH[fase][mapel])
+            ? BANK_SOAL_MENTAH[fase][mapel]
+            : BANK_SOAL_MENTAH['1-2']['MTK'];
+
+        sumberData.forEach(item => {
+            // ======= [LOGIKA STRUKTUR DATA: LINKED LIST INSERT LAST SAAT MEMUAT BANK SOAL] =======
+            bankSoal.insertLast(item);
+        });
+
+        const totalSoal = bankSoal.size;
+
+        // ======= [LOGIKA STRUKTUR DATA: LINKED LIST TRAVERSAL DIMULAI DARI HEAD] =======
+        let ptr = bankSoal.head;
+        while (ptr) {
+            // ======= [LOGIKA STRUKTUR DATA: QUEUE ENQUEUE REAR DARI NODE LINKED LIST] =======
+            antreanKuis.enqueueRear(ptr);
+            // ======= [LOGIKA STRUKTUR DATA: LINKED LIST PINDAH KE POINTER NEXT] =======
+            ptr = ptr.next;
+        }
+
+        function tampilkanSoal() {
+            if (antreanKuis.isEmpty()) {
+                selesaikanKuis();
+                return;
+            }
+
+            nomorUrut++;
+            // ======= [LOGIKA STRUKTUR DATA: QUEUE DEQUEUE UNTUK MENGAMBIL SOAL AKTIF] =======
+            soalAktif = antreanKuis.dequeue();
+
+            document.getElementById('display-progress').innerText = `Soal ${nomorUrut} / ${totalSoal}`;
+            document.getElementById('teks-soal').innerText = soalAktif.teks;
+            document.getElementById('btn-sebelumnya').disabled = stackUndo.isEmpty();
+            document.getElementById('btn-selanjutnya').disabled = true;
+
+            const containerOpsi = document.getElementById('container-opsi');
+            containerOpsi.innerHTML = '';
+
+            const abcd = ['A', 'B', 'C', 'D'];
+            soalAktif.pilihan.forEach((teks, idx) => {
+                const div = document.createElement('div');
+                div.className = 'opsi-item';
+                div.innerHTML = `<div class="bullet-radio"></div> <span>${teks}</span>`;
+
+                if (soalAktif.jawabanUser === abcd[idx]) {
+                    div.classList.add('selected');
+                    document.getElementById('btn-selanjutnya').disabled = false;
+                }
+
+                div.onclick = () => {
+                    document.querySelectorAll('.opsi-item').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    // ======= [LOGIKA STRUKTUR DATA: LINKED LIST UPDATE FIELD JAWABAN DI NODE AKTIF] =======
+                    soalAktif.jawabanUser = abcd[idx];
+                    document.getElementById('btn-selanjutnya').disabled = false;
+                };
+                containerOpsi.appendChild(div);
+            });
+        }
+
+        document.getElementById('btn-selanjutnya').onclick = () => {
+            // ======= [LOGIKA STRUKTUR DATA: STACK PUSH SOAL AKTIF KE RIWAYAT UNDO] =======
+            stackUndo.push(soalAktif);
+            hitungSkorLive();
+            tampilkanSoal();
+        };
+
+        document.getElementById('btn-sebelumnya').onclick = () => {
+            if (stackUndo.isEmpty()) return;
+
+            // ======= [LOGIKA STRUKTUR DATA: DEQUE ENQUEUE FRONT SOAL AKTIF UNTUK DIKEMBALIKAN] =======
+            antreanKuis.enqueueFront(soalAktif);
+            // ======= [LOGIKA STRUKTUR DATA: STACK POP AMBIL SOAL SEBELUMNYA] =======
+            const soalLama = stackUndo.pop();
+
+            hitungSkorLive();
+            nomorUrut -= 2;
+            if (nomorUrut < 0) nomorUrut = 0;
+            soalAktif = null;
+
+            // ======= [LOGIKA STRUKTUR DATA: DEQUE ENQUEUE FRONT SOAL LAMA AGAR LANGSUNG DIRENDER] =======
+            antreanKuis.enqueueFront(soalLama);
+            tampilkanSoal();
+        };
+
+        function hitungSkorLive() {
+            let skorSementara = 0;
+            // ======= [LOGIKA STRUKTUR DATA: STACK TRAVERSAL DIMULAI DARI TOP] =======
+            let cursor = stackUndo.top;
+            while (cursor) {
+                if (cursor.data.jawabanUser === cursor.data.kunci) skorSementara += 10;
+                // ======= [LOGIKA STRUKTUR DATA: STACK TRAVERSAL PINDAH KE NODE NEXT] =======
+                cursor = cursor.next;
+            }
+            skor = skorSementara;
+            document.getElementById('skor-live').innerText = skor;
+        }
+
+        function selesaikanKuis() {
+            if (kuisSudahSelesai) return;
+            kuisSudahSelesai = true;
+            clearInterval(timerInterval);
+
+            let benar = 0;
+            // ======= [LOGIKA STRUKTUR DATA: LINKED LIST TRAVERSAL REKAP SKOR DIMULAI DARI HEAD] =======
+            let curr = bankSoal.head;
+            while (curr) {
+                if (curr.jawabanUser === curr.kunci) benar++;
+                // ======= [LOGIKA STRUKTUR DATA: LINKED LIST TRAVERSAL PINDAH KE POINTER NEXT] =======
+                curr = curr.next;
+            }
+
+            const skorAkhir = benar * 10;
+            localStorage.setItem('skor_akhir', skorAkhir);
+            localStorage.setItem('benar_hitung', benar);
+            localStorage.setItem('durasi_detik', 300 - waktu);
+            window.location.href = 'statistik.html';
+        }
+
+        const timerInterval = setInterval(() => {
+            if (waktu > 0) {
+                waktu--;
+                const m = Math.floor(waktu / 60);
+                const d = waktu % 60;
+                document.getElementById('timer').innerText = `${m}:${d < 10 ? '0' + d : d}`;
+            } else {
+                alert('Waktu pengerjaan kuis habis!');
+                selesaikanKuis();
+            }
+        }, 1000);
+
+        tampilkanSoal();
+    </script>
+</body>
+</html>
+

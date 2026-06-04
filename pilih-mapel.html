@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bintang - Pilih Mata Pelajaran</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-background">
+        <div class="container">
+            <header class="header-kuis">
+                <h1 class="judul-utama"><span class="gold-text">📖 PILIH MATA PELAJARAN</span></h1>
+            </header>
+
+            <section class="mapel-seksi">
+                <div class="mapel-grid">
+                    <div class="card-mapel" data-mapel="Matematika">
+                        <div class="icon-mapel">📐</div>
+                        <h3 class="nama-mapel">Matematika</h3>
+                        <p class="sub-detail">10 soal</p> </div>
+
+                    <div class="card-mapel" id="mapel-tengah" data-mapel="Umum">
+                        <div class="icon-mapel">🌟</div>
+                        <h3 class="nama-mapel" id="text-mapel-tengah">Pengetahuan Umum</h3>
+                        <p class="sub-detail">10 soal</p>
+                    </div>
+
+                    <div class="card-mapel" data-mapel="Inggris">
+                        <div class="icon-mapel text-icon">GB</div>
+                        <h3 class="nama-mapel">Bahasa Inggris</h3>
+                        <p class="sub-detail">10 soal</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="action-seksi">
+                <button id="btn-mulai-kuis" class="btn-petualangan" disabled>MULAI KERJAKAN</button>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Cek fase yang dipilih sebelumnya dari Page 2
+        const faseDipilih = localStorage.getItem('selected_fase');
+        const textMapelTengah = document.getElementById('text-mapel-tengah');
+        const mapelTengahNode = document.getElementById('mapel-tengah');
+
+        // Logika Dinamis: Jika Kelas 3-6, maka Pengetahuan Umum berubah jadi IPAS
+        if (faseDipilih === "3-4" || faseDipilih === "5-6") {
+            textMapelTengah.innerText = "IPAS";
+            mapelTengahNode.setAttribute('data-mapel', 'IPAS');
+        }
+
+        const cardsMapel = document.querySelectorAll('.card-mapel');
+        const btnMulai = document.getElementById('btn-mulai-kuis');
+        let mapelTerpilih = null;
+
+        cardsMapel.forEach(card => {
+            card.addEventListener('click', () => {
+                cardsMapel.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                mapelTerpilih = card.getAttribute('data-mapel');
+                btnMulai.disabled = false;
+            });
+        });
+
+        btnMulai.addEventListener('click', () => {
+            localStorage.setItem('selected_mapel', mapelTerpilih);
+            
+            // Redirect ke Page 4 (Halaman Kuis Utama)
+            window.location.href = 'kuis.html';
+        });
+    </script>
+</body>
+</html>

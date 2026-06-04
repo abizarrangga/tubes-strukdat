@@ -1,0 +1,712 @@
+/* --- RESET & VARIABLES --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-color: #2D2159;         
+    --input-bg-color: #1D143D;   
+    --char-bg-color: #2B2158;    
+    --btn-bg-color: #2D2453;     
+    --card-kelas-bg: #221947;    /* Warna ungu kotak kelas sesuai figma */
+    --text-white: #FFFFFF;
+    --text-pink: #FF66A1;
+    --text-gold: #FFD21E;
+    --font-family: 'Nunito', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.app-background {
+    width: 100%;
+    max-width: 1200px; 
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
+}
+
+/* UTILITY UNTUK PINDAH PAGE */
+.d-none { display: none !important; }
+
+/* --- 1. HEADER STYLE --- */
+.header-kuis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.judul-utama {
+    font-size: 56pt; 
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.gold-text { color: var(--text-gold); }
+.pink-text { color: var(--text-pink); }
+
+.icon-trophy { font-size: 56pt; }
+
+/* --- 2. FORM STYLE --- */
+.form-seksi {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.label-form {
+    color: var(--text-white) !important;
+    font-weight: 700;
+    font-size: 22pt;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-profile { font-size: 24pt; }
+
+.custom-input {
+    width: 100%;
+    max-width: 700px; 
+    background-color: var(--input-bg-color);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 30px; 
+    padding: 20px 30px; 
+    font-family: var(--font-family);
+    font-size: 18pt; 
+    color: var(--text-white);
+    outline: none;
+    text-align: left; 
+    transition: all 0.3s;
+}
+
+.custom-input:focus {
+    border-color: var(--text-gold);
+    box-shadow: 0 0 15px rgba(255, 210, 30, 0.2);
+}
+
+/* --- 3. PILIH KARAKTER STYLE --- */
+.karakter-seksi {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.sub-judul {
+    color: var(--text-white) !important;
+    font-weight: 700;
+    font-size: 20pt; 
+}
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 25px; 
+    width: auto;
+}
+
+.character-item {
+    width: 100px;  
+    height: 100px; 
+    background-color: var(--char-bg-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 4px solid transparent; 
+}
+
+.character-item:hover {
+    transform: scale(1.15);
+    background-color: rgba(43, 33, 88, 0.8);
+}
+
+.character-item.selected {
+    border-color: var(--text-gold);
+    box-shadow: 0 0 20px rgba(255, 210, 30, 0.4);
+}
+
+.animal-emoji { font-size: 45pt; }
+
+/* --- PAGE 2: PILIHAN KELAS STYLE (SANGAT PRESISI FIGMA) --- */
+.kelas-seksi {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.kelas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 Kotak sejajar */
+    gap: 30px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.card-kelas {
+    background-color: var(--card-kelas-bg);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card-kelas:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.card-kelas.selected {
+    border-color: var(--text-gold);
+    box-shadow: 0 0 25px rgba(255, 210, 30, 0.2);
+}
+
+/* Lingkaran Warna Indikator */
+.circle-indicator {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #000000; /* Border hitam tebal sesuai mockup figma */
+}
+
+.bg-green { background-color: #00CC00; }
+.bg-yellow { background-color: #FFDD00; }
+.bg-red { background-color: #FF1A1A; }
+
+.nama-kelas {
+    color: var(--text-white)!important;
+    font-size: 20pt;
+    font-weight: 900;
+}
+
+.detail-soal {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14pt;
+    font-weight: 400;
+}
+
+/* --- 4. BUTTON STYLE --- */
+.action-seksi {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-petualangan {
+    background-color: var(--btn-bg-color);
+    border: 2px solid rgba(255,255,255,0.15);
+    color: var(--text-white);
+    font-family: var(--font-family);
+    font-weight: 900;
+    font-size: 16pt; 
+    padding: 18px 45px; 
+    border-radius: 30px; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    color: var(--text-white) !important;
+}
+
+.btn-petualangan:hover:not(:disabled) {
+    background-color: #3B2E6E;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.btn-petualangan:disabled {
+    opacity: 0.2; /* Dibuat lebih transparan/gelap saat disable sesuai figma */
+    cursor: not-allowed;
+}
+
+.sparkle { font-size: 18pt; color: var(--text-gold); }
+
+/* --- PAGE 3: PILIH MATA PELAJARAN STYLE --- */
+.mapel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.card-mapel {
+    background-color: var(--card-kelas-bg);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card-mapel:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.card-mapel.selected {
+    border-color: var(--text-gold);
+    background-color: rgba(255, 210, 30, 0.05);
+    box-shadow: 0 0 30px rgba(255, 210, 30, 0.15);
+}
+
+.icon-mapel {
+    font-size: 50pt;
+    margin-bottom: 10px;
+}
+
+/* Khusus ikon teks GB agar terlihat tebal seperti di Figma */
+.text-icon {
+    font-weight: 900;
+    color: var(--text-white);
+    opacity: 0.9;
+    font-size: 40pt;
+}
+
+.nama-mapel {
+    color: var(--text-white)!important;
+    font-size: 18pt;
+    font-weight: 700;
+    text-align: center;
+}
+
+.sub-detail {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12pt;
+}
+
+/* --- PAGE 4: HALAMAN KUIS UTAMA --- */
+.kuis-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px; /* Kolom kiri lebar, kanan (sidebar) 350px */
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+    align-items: start;
+}
+
+/* Bagian Kiri (Soal) */
+.box-soal {
+    background-color: var(--card-kelas-bg);
+    border-radius: 24px;
+    padding: 50px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.nomor-soal {
+    color: rgba(255,255,255,0.6);
+    font-size: 16pt;
+    margin-bottom: 20px;
+}
+
+.teks-pertanyaan {
+    color: var(--text-white);
+    font-size: 24pt;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+/* Opsi Jawaban */
+.opsi-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.opsi-item {
+    background-color: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 15px 30px;
+    color: var(--text-white);
+    font-size: 16pt;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.2s;
+}
+
+.opsi-item:hover { background-color: rgba(255,255,255,0.1); }
+.opsi-item.selected {
+    border-color: var(--text-gold);
+    background-color: rgba(255, 210, 30, 0.1);
+}
+
+.bullet-radio {
+    width: 25px;
+    height: 25px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+}
+.selected .bullet-radio {
+    background-color: var(--text-gold);
+    border-color: var(--text-gold);
+}
+
+/* Bagian Kanan (Sidebar Dashboard) */
+.sidebar-kuis {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.widget-kuis {
+    background-color: var(--card-kelas-bg);
+    border: 2px solid rgba(255,255,255,0.05);
+    border-radius: 24px;
+    padding: 25px;
+}
+
+.profil-peserta {
+    text-align: center;
+}
+.char-display { font-size: 60pt; margin-bottom: 10px; }
+.name-display { color: var(--text-white); font-size: 20pt; font-weight: 900; }
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--text-white);
+    margin-bottom: 10px;
+}
+.info-label { font-size: 12pt; opacity: 0.7; }
+.info-value { font-size: 24pt; font-weight: 900; }
+
+.footer-nav {
+    grid-column: 1 / 2; /* Navigasi ada di bawah kotak soal */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-nav {
+    background: none;
+    border: none;
+    color: var(--text-white);
+    font-size: 14pt;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.8;
+}
+.btn-nav:hover:not(:disabled) { opacity: 1; color: var(--text-gold); }
+.btn-nav:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* --- PERBAIKAN TEKS GELAP PADA HALAMAN KUIS --- */
+
+/* 1. Memaksa teks di dalam opsi pilihan ganda berwarna putih cerah */
+.opsi-item span {
+    color: #FFFFFF !important;
+    font-weight: 700;
+}
+
+/* 2. Memaksa teks pertanyaan/soal berwarna putih cerah */
+.teks-pertanyaan {
+    color: #FFFFFF !important;
+}
+
+/* 3. Memaksa label info di sidebar (Waktu Tersisa, Skor, High Score) berwarna putih cerah */
+.info-label {
+    color: #FFFFFF !important;
+    opacity: 0.9; /* Sedikit soft tapi tetap terang */
+    font-weight: 700;
+}
+
+/* 4. Memaksa nilai angka di sidebar (seperti 4:55 atau skor 0) berwarna putih atau emas */
+.info-value {
+    color: #FFFFFF !important;
+}
+
+/* Khusus angka skor live dan timer dibuat warna emas/kuning agar estetik sesuai figma */
+#timer, #skor-live {
+    color: var(--text-gold) !important;
+}
+
+/* --- PAGE 5: HALAMAN HASIL / SKOR --- */
+.hasil-container {
+    background: rgba(34, 25, 71, 0.6); /* Transparan gelap */
+    backdrop-filter: blur(10px); /* Efek blur kaca */
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 40px;
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.icon-terompet {
+    font-size: 60pt;
+    margin-bottom: -10px;
+}
+
+.label-skor-kamu {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 18pt;
+    font-weight: 700;
+}
+
+.skor-besar {
+    font-size: 80pt;
+    font-weight: 900;
+    background: linear-gradient(to bottom, #FF66A1, #FF1A75);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin: 10px 0;
+}
+
+.row-rekap {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-white);
+    font-size: 16pt;
+}
+
+.rekap-kiri {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.rekap-kanan {
+    font-weight: 900;
+}
+
+/* Warna spesifik teks rekap kanan agar menyala */
+.text-hijau { color: #2ecc71; }
+.text-emas { color: var(--text-gold); }
+.text-biru { color: #3498db; }
+
+/* Kelompok Tombol Bawah Sejajar */
+.btn-wrapper-hasil {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.btn-hasil {
+    flex: 1;
+    border: none;
+    font-family: var(--font-family);
+    font-weight: 900;
+    font-size: 13pt;
+    padding: 16px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-white);
+    transition: all 0.2s;
+}
+
+.btn-kuning {
+    background-color: #FF9F43;
+}
+.btn-kuning:hover { background-color: #E0872B; }
+
+.btn-biru-terang {
+    background-color: #4D79FF;
+}
+.btn-biru-terang:hover { background-color: #3356CC; }
+
+/* --- PAGE 6: HALAMAN LEADERBOARD GLOBAL --- */
+.leaderboard-container {
+    background: rgba(34, 25, 71, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    padding: 40px;
+    width: 100%;
+    max-width: 1100px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.sub-judul-leaderboard {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16pt;
+    text-align: center;
+    margin-top: -25px;
+    margin-bottom: 30px;
+}
+
+/* Tabel Flexbox Peringkat */
+.tabel-papan {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Baris Header Tabel */
+.baris-header {
+    display: grid;
+    grid-template-columns: 80px 2fr 1fr 1fr 1.2fr 1.2fr;
+    padding: 10px 25px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Baris Data Pemain */
+.baris-pemain {
+    display: grid;
+    grid-template-columns: 80px 2fr 1fr 1fr 1.2fr 1.2fr;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px 25px;
+    color: var(--text-white);
+    font-size: 16pt;
+    transition: all 0.2s;
+}
+
+/* Warna dan Medali Khusus Juara 1, 2, 3 Sesuai Figma */
+.baris-pemain.juara-1 {
+    background: rgba(255, 210, 30, 0.12);
+    border-color: rgba(255, 210, 30, 0.3);
+}
+.baris-pemain.juara-2 {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.baris-pemain.juara-3 {
+    background: rgba(255, 102, 161, 0.12);
+    border-color: rgba(255, 102, 161, 0.3);
+}
+
+/* Kolom Alignment & Style */
+.kol-rank { font-weight: 900; font-size: 18pt; }
+.juara-1 .kol-rank { color: var(--text-gold); }
+.juara-3 .kol-rank { color: var(--text-pink); }
+
+.kol-name { font-weight: 700; }
+.kol-char { font-size: 26pt; display: flex; justify-content: flex-start; }
+.kol-skor { font-weight: 900; font-size: 20pt; }
+
+.kol-level {
+    display: inline-block;
+    background-color: #2ecc71;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12pt;
+    font-weight: 700;
+    width: fit-content;
+}
+
+.kol-mapel { color: rgba(255, 255, 255, 0.7); }
+
+/* Tombol Aksi Paling Bawah */
+.wrapper-nav-bawah {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 35px;
+    width: 100%;
+}
+
+.btn-bawah-biru {
+    background-color: #4D79FF;
+    border: none;
+    color: white;
+    font-family: var(--font-family);
+    font-weight: 900;
+    font-size: 14pt;
+    padding: 16px 35px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+.btn-bawah-biru:hover { background-color: #3356CC; transform: translateY(-2px); }
+
+.btn-bawah-abu {
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-family: var(--font-family);
+    font-weight: 900;
+    font-size: 14pt;
+    padding: 16px 35px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+.btn-bawah-abu:hover { background-color: rgba(255,255,255,0.2); }

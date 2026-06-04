@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bintang - Statistik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-background">
+        <div class="hasil-container">
+            <div class="icon-terompet">📊</div>
+            <div class="label-skor-kamu">Statistik Kuis</div>
+            <div class="skor-besar" id="skor-jumbo">0</div>
+
+            <div class="row-rekap">
+                <div class="rekap-kiri"><span>✅</span> Jawaban Benar</div>
+                <div class="rekap-kanan text-hijau" id="rekap-benar">0 dari 10</div>
+            </div>
+
+            <div class="row-rekap">
+                <div class="rekap-kiri"><span>⏱️</span> Waktu Digunakan</div>
+                <div class="rekap-kanan text-biru" id="rekap-waktu">0 menit 0 detik</div>
+            </div>
+
+            <div class="btn-wrapper-hasil">
+                <button class="btn-hasil btn-biru-terang" id="btn-kerjakan-lagi">🔄 KERJAKAN LAGI</button>
+                <button class="btn-hasil btn-kuning" id="btn-leaderboard">🏆 LEADERBOARD</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const skorAkhir = parseInt(localStorage.getItem('skor_akhir')) || 0;
+        const benarHitung = parseInt(localStorage.getItem('benar_hitung')) || 0;
+        const totalDetik = parseInt(localStorage.getItem('durasi_detik')) || 0;
+        const namaPlayer = localStorage.getItem('player_name') || 'Petualang';
+        const charPlayer = localStorage.getItem('player_char_id') || 'kucing';
+        const faseAktif = localStorage.getItem('selected_fase') || '1-2';
+        const mapelAktif = localStorage.getItem('selected_mapel') || 'MTK';
+        const hasilId = `${namaPlayer}|${charPlayer}|${faseAktif}|${mapelAktif}|${skorAkhir}|${benarHitung}|${totalDetik}`;
+
+        let dataLeaderboard = JSON.parse(localStorage.getItem('global_leaderboard')) || [];
+
+        if (localStorage.getItem('last_saved_result_id') !== hasilId) {
+            dataLeaderboard.push({
+                nama: namaPlayer,
+                karakter: charPlayer,
+                fase: faseAktif,
+                mapel: mapelAktif,
+                skor: skorAkhir
+            });
+            localStorage.setItem('global_leaderboard', JSON.stringify(dataLeaderboard));
+            localStorage.setItem('last_saved_result_id', hasilId);
+        }
+
+        const menit = Math.floor(totalDetik / 60);
+        const detik = totalDetik % 60;
+
+        document.getElementById('skor-jumbo').innerText = skorAkhir;
+        document.getElementById('rekap-benar').innerText = `${benarHitung} dari 10`;
+        document.getElementById('rekap-waktu').innerText = `${menit} menit ${detik} detik`;
+
+        document.getElementById('btn-kerjakan-lagi').onclick = () => {
+            localStorage.removeItem('skor_akhir');
+            localStorage.removeItem('benar_hitung');
+            localStorage.removeItem('durasi_detik');
+            localStorage.removeItem('last_saved_result_id');
+            window.location.href = 'kuis.html';
+        };
+
+        document.getElementById('btn-leaderboard').onclick = () => {
+            window.location.href = 'leaderboard.html';
+        };
+    </script>
+</body>
+</html>

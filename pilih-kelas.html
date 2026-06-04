@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bintang - Pilih Kelas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-background">
+        <div class="container">
+            <header class="header-kuis">
+                <h1 class="judul-utama"><span class="gold-text">⚡ AYO PILIH KELASMU</span></h1>
+            </header>
+
+            <section class="kelas-seksi">
+                <div class="kelas-grid">
+                    <div class="card-kelas" data-fase="1-2">
+                        <div class="circle-indicator bg-green"></div>
+                        <h3 class="nama-kelas">Kelas 1-2</h3>
+                        <p class="detail-soal">10 soal</p>
+                    </div>
+                    <div class="card-kelas" data-fase="3-4">
+                        <div class="circle-indicator bg-yellow"></div>
+                        <h3 class="nama-kelas">Kelas 3-4</h3>
+                        <p class="detail-soal">10 soal</p>
+                    </div>
+                    <div class="card-kelas" data-fase="5-6">
+                        <div class="circle-indicator bg-red"></div>
+                        <h3 class="nama-kelas">Kelas 5-6</h3>
+                        <p class="detail-soal">10 soal</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="action-seksi">
+                <button id="btn-lanjutkan" class="btn-petualangan" disabled>LANJUTKAN</button>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const cardsKelas = document.querySelectorAll('.card-kelas');
+        const btnLanjutkan = document.getElementById('btn-lanjutkan');
+        let faseTerpilih = null;
+
+        cardsKelas.forEach(card => {
+            card.addEventListener('click', () => {
+                cardsKelas.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                faseTerpilih = card.getAttribute('data-fase');
+                btnLanjutkan.disabled = false;
+            });
+        });
+
+        btnLanjutkan.addEventListener('click', () => {
+            localStorage.setItem('selected_fase', faseTerpilih);
+           
+            window.location.href = 'pilih-mapel.html';
+        });
+    </script>
+</body>
+</html>
