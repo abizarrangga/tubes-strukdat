@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bintang - Halaman Awal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-background">
+        <div class="container">
+            <header class="header-kuis">
+                <span class="icon-trophy">🏆</span>
+                <h1 class="judul-utama">
+                    <span class="gold-text">QUIZ</span>
+                    <span class="pink-text">BINTANG</span>
+                </h1>
+                <span class="icon-trophy">🏆</span>
+            </header>
+
+            <section class="form-seksi">
+                <label for="input-nama" class="label-form">
+                    <span class="icon-profile">👤</span> Nama Panggilan:
+                </label>
+                <input type="text" id="input-nama" class="custom-input" placeholder="Masukkan namamu..." autocomplete="off">
+            </section>
+
+            <section class="karakter-seksi">
+                <h2 class="sub-judul">Pilih Karaktermu:</h2>
+                <div class="character-grid" id="container-karakter"></div>
+            </section>
+
+            <footer class="action-seksi">
+                <button id="btn-mulai" class="btn-petualangan" disabled>
+                    <span class="sparkle">✨</span> MULAI PETUALANGAN <span class="sparkle">✨</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="data-karakter.js"></script>
+    <script>
+        const containerKarakter = document.getElementById('container-karakter');
+        const inputNama = document.getElementById('input-nama');
+        const btnMulai = document.getElementById('btn-mulai');
+        let karakterTerpilih = null;
+
+        DAFTAR_KARAKTER.forEach(data => {
+            const charItem = document.createElement('div');
+            charItem.className = 'character-item';
+            charItem.innerHTML = `<span class="animal-emoji">${data.emoji}</span>`;
+            charItem.addEventListener('click', () => {
+                document.querySelectorAll('.character-item').forEach(c => c.classList.remove('selected'));
+                charItem.classList.add('selected');
+                karakterTerpilih = data.id;
+                cekFormValid();
+            });
+            containerKarakter.appendChild(charItem);
+        });
+
+        function cekFormValid() {
+            if (inputNama.value.trim().length >= 2 && karakterTerpilih) {
+                btnMulai.disabled = false;
+            } else {
+                btnMulai.disabled = true;
+            }
+        }
+        inputNama.addEventListener('input', cekFormValid);
+
+        // Pindah file ke halaman pilih kelas
+        btnMulai.addEventListener('click', () => {
+            localStorage.setItem('player_name', inputNama.value.trim());
+            localStorage.setItem('player_char_id', karakterTerpilih);
+            
+            // Berpindah ke file html kedua
+            window.location.href = 'pilih-kelas.html';
+        });
+    </script>
+</body>
+</html>
