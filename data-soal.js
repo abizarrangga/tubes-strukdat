@@ -53,7 +53,7 @@ const BANK_SOAL_MENTAH = {
             { id: 9, teks: "Berapa menit dalam 2 jam?", pilihan: ["60 Menit", "90 Menit", "120 Menit", "150 Menit"], kunci: "C" },
             { id: 10, teks: "Lambang bilangan Romawi dari 5 adalah...", pilihan: ["I", "V", "X", "L"], kunci: "B" }
         ],
-        "IPAS": [
+        "umum": [
             { id: 1, teks: "Bagian tumbuhan yang berfungsi menyerap air dari dalam tanah adalah...", pilihan: ["Daun", "Batang", "Akar", "Bunga"], kunci: "C" },
             { id: 2, teks: "Proses pembuatan makanan oleh tumbuhan hijau dibantu cahaya matahari disebut...", pilihan: ["Respirasi", "Fotosintesis", "Evaporasi", "Transpirasi"], kunci: "B" },
             { id: 3, teks: "Benda yang tidak dapat ditembus cahaya disebut benda...", pilihan: ["Bening", "Gelap/Gelap", "Transparan", "Mengkilap"], kunci: "B" },
@@ -91,7 +91,7 @@ const BANK_SOAL_MENTAH = {
             { id: 9, teks: "Rumus luas lingkaran adalah...", pilihan: ["p x l", "s x s", "2 x pi x r", "pi x r x r"], kunci: "D" },
             { id: 10, teks: "Hasil perhitungan dari -5 + 8 adalah...", pilihan: ["-3", "3", "-13", "13"], kunci: "B" }
         ],
-        "IPAS": [
+        "umum": [
             { id: 1, teks: "Planet terdekat dari matahari dalam sistem tata surya kita adalah...", pilihan: ["Venus", "Bumi", "Mars", "Merkurius"], kunci: "D" },
             { id: 2, teks: "Alat perkembangbiakan jantan pada bunga dinamakan...", pilihan: ["Putik", "Benang Sari", "Mahkota", "Kelopak"], kunci: "B" },
             { id: 3, teks: "Hewan yang berkembang biak dengan cara melahirkan disebut...", pilihan: ["Ovipar", "Vivipar", "Ovovivipar", "Mamalia"], kunci: "B" },

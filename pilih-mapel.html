@@ -50,11 +50,7 @@
         const textMapelTengah = document.getElementById('text-mapel-tengah');
         const mapelTengahNode = document.getElementById('mapel-tengah');
 
-        // Logika Dinamis: Jika Kelas 3-6, maka Pengetahuan Umum berubah jadi IPAS
-        if (faseDipilih === "3-4" || faseDipilih === "5-6") {
-            textMapelTengah.innerText = "IPAS";
-            mapelTengahNode.setAttribute('data-mapel', 'IPAS');
-        }
+
 
         const cardsMapel = document.querySelectorAll('.card-mapel');
         const btnMulai = document.getElementById('btn-mulai-kuis');

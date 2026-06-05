@@ -21,11 +21,18 @@
             </header>
             <div class="sub-judul-leaderboard">10 peringkat tertinggi per kelas</div>
 
-            <div id="tab-kelas-container" style="display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+            <div id="tab-kelas-container" style="display:flex; gap:10px; justify-content:center; margin-bottom:10px; flex-wrap:wrap;">
                 <button class="btn-tab-kelas active" data-fase="semua">🌐 Semua</button>
                 <button class="btn-tab-kelas" data-fase="1-2">📗 Kelas 1-2</button>
                 <button class="btn-tab-kelas" data-fase="3-4">📙 Kelas 3-4</button>
                 <button class="btn-tab-kelas" data-fase="5-6">📕 Kelas 5-6</button>
+            </div>
+
+            <div id="tab-mapel-container" style="display:flex; gap:8px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+                <button class="btn-tab-mapel active" data-mapel="semua">📚 Semua Mapel</button>
+                <button class="btn-tab-mapel" data-mapel="matematika">🔢 Matematika</button>
+                <button class="btn-tab-mapel" data-mapel="umum">🌍 Umum</button>
+                <button class="btn-tab-mapel" data-mapel="inggris">🇬🇧 Inggris</button>
             </div>
 
             <div class="tabel-papan">
@@ -93,6 +100,7 @@
         // ======= [LOGIKA STRUKTUR DATA: FETCH DATA DARI FIREBASE GLOBAL NODE] =======
         let semuaDataPemain = []; // Cache semua data dari Firebase
         let filterFaseAktif = 'semua'; // Tab yang sedang aktif
+        let filterMapelAktif = 'semua'; // Filter mapel yang sedang aktif
 
         function renderLeaderboard() {
             const containerRows = document.getElementById('container-rows');
@@ -103,13 +111,21 @@
                 ? semuaDataPemain
                 : semuaDataPemain.filter(item => String(item.fase) === filterFaseAktif);
 
+            // Filter berdasarkan mapel yang aktif
+            if (filterMapelAktif !== 'semua') {
+                dataFiltered = dataFiltered.filter(item =>
+                    item.mapel && item.mapel.toLowerCase() === filterMapelAktif
+                );
+            }
+
             // Jalankan Bubble Sort manual
             const dataTerurut = urutkanDenganBubbleSort([...dataFiltered]);
             const top10 = dataTerurut.slice(0, 10);
 
             if (top10.length === 0) {
-                const label = filterFaseAktif === 'semua' ? 'global' : `Kelas ${filterFaseAktif}`;
-                containerRows.innerHTML = `<div style="color:rgba(255,255,255,0.5); text-align:center; padding: 40px; font-size:16pt;">Belum ada data peringkat ${label}! 🚀</div>`;
+                const labelKelas = filterFaseAktif === 'semua' ? 'global' : `Kelas ${filterFaseAktif}`;
+                const labelMapel = filterMapelAktif === 'semua' ? '' : ` - ${filterMapelAktif.charAt(0).toUpperCase() + filterMapelAktif.slice(1)}`;
+                containerRows.innerHTML = `<div style="color:rgba(255,255,255,0.5); text-align:center; padding: 40px; font-size:16pt;">Belum ada data peringkat ${labelKelas}${labelMapel}! 🚀</div>`;
                 return;
             }
 
@@ -152,6 +168,16 @@
                 document.querySelectorAll('.btn-tab-kelas').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 filterFaseAktif = btn.getAttribute('data-fase');
+                renderLeaderboard();
+            });
+        });
+
+        // Logika Tab Mapel
+        document.querySelectorAll('.btn-tab-mapel').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-tab-mapel').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterMapelAktif = btn.getAttribute('data-mapel');
                 renderLeaderboard();
             });
         });
