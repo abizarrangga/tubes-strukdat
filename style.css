@@ -1062,3 +1062,28 @@ button {
         flex-direction: column;
     }
 }
+
+/* ===== TAB KELAS LEADERBOARD ===== */
+.btn-tab-kelas {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Nunito', sans-serif;
+    font-size: 11pt;
+    font-weight: 700;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+}
+.btn-tab-kelas:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.04);
+}
+.btn-tab-kelas.active {
+    background: var(--color-biru-tua, #3a86ff);
+    border-color: var(--color-biru-muda, #6eb5ff);
+    color: white;
+    box-shadow: 0 0 14px rgba(58, 134, 255, 0.5);
+}

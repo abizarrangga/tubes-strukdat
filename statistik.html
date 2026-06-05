@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -27,6 +27,10 @@
                 <div class="rekap-kanan text-biru" id="rekap-waktu">0 menit 0 detik</div>
             </div>
 
+            <div id="status-simpan" style="font-size:13pt; color: rgba(255,255,255,0.6); text-align:center; margin: 8px 0;">
+                ☁️ Menyimpan skor ke database...
+            </div>
+
             <div class="btn-wrapper-hasil">
                 <button class="btn-hasil btn-biru-terang" id="btn-kerjakan-lagi">🔄 KERJAKAN LAGI</button>
                 <button class="btn-hasil btn-kuning" id="btn-leaderboard">🏆 LEADERBOARD</button>
@@ -34,37 +38,77 @@
         </div>
     </div>
 
+    <!-- Firebase SDK v8 (compat) — sama versi dengan leaderboard.html -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
-        const skorAkhir = parseInt(localStorage.getItem('skor_akhir')) || 0;
-        const benarHitung = parseInt(localStorage.getItem('benar_hitung')) || 0;
-        const totalDetik = parseInt(localStorage.getItem('durasi_detik')) || 0;
-        const namaPlayer = localStorage.getItem('player_name') || 'Petualang';
-        const charPlayer = localStorage.getItem('player_char_id') || 'kucing';
-        const faseAktif = localStorage.getItem('selected_fase') || '1-2';
-        const mapelAktif = localStorage.getItem('selected_mapel') || 'MTK';
+        // ======= KONFIGURASI FIREBASE (SATU SUMBER KEBENARAN) =======
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvbsN9DrOvjKYRtIC6FkfKcTc8L1043DY",
+            authDomain: "strukdat-bb8c9.firebaseapp.com",
+            databaseURL: "https://strukdat-bb8c9-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "strukdat-bb8c9",
+            storageBucket: "strukdat-bb8c9.firebasestorage.app",
+            messagingSenderId: "885523713216",
+            appId: "1:885523713216:web:c799cb729273e4ae447125"
+        };
+
+        // Inisialisasi Firebase (cegah duplikasi jika halaman di-reload)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // ======= AMBIL DATA HASIL KUIS DARI LOCALSTORAGE (SEMENTARA) =======
+        const skorAkhir    = parseInt(localStorage.getItem('skor_akhir'))    || 0;
+        const benarHitung  = parseInt(localStorage.getItem('benar_hitung'))  || 0;
+        const totalDetik   = parseInt(localStorage.getItem('durasi_detik'))  || 0;
+        const namaPlayer   = localStorage.getItem('player_name')             || 'Petualang';
+        const charPlayer   = localStorage.getItem('player_char_id')          || 'kucing';
+        const faseAktif    = localStorage.getItem('selected_fase')           || '1-2';
+        const mapelAktif   = localStorage.getItem('selected_mapel')          || 'MTK';
+
+        // ID unik untuk mencegah simpan ganda jika halaman di-refresh
         const hasilId = `${namaPlayer}|${charPlayer}|${faseAktif}|${mapelAktif}|${skorAkhir}|${benarHitung}|${totalDetik}`;
 
-        let dataLeaderboard = JSON.parse(localStorage.getItem('global_leaderboard')) || [];
-
-        if (localStorage.getItem('last_saved_result_id') !== hasilId) {
-            dataLeaderboard.push({
-                nama: namaPlayer,
-                karakter: charPlayer,
-                fase: faseAktif,
-                mapel: mapelAktif,
-                skor: skorAkhir
-            });
-            localStorage.setItem('global_leaderboard', JSON.stringify(dataLeaderboard));
-            localStorage.setItem('last_saved_result_id', hasilId);
-        }
-
+        // ======= TAMPILKAN STATISTIK DI LAYAR =======
         const menit = Math.floor(totalDetik / 60);
         const detik = totalDetik % 60;
 
-        document.getElementById('skor-jumbo').innerText = skorAkhir;
-        document.getElementById('rekap-benar').innerText = `${benarHitung} dari 10`;
-        document.getElementById('rekap-waktu').innerText = `${menit} menit ${detik} detik`;
+        document.getElementById('skor-jumbo').innerText   = skorAkhir;
+        document.getElementById('rekap-benar').innerText  = `${benarHitung} dari 10`;
+        document.getElementById('rekap-waktu').innerText  = `${menit} menit ${detik} detik`;
 
+        // ======= SIMPAN SKOR KE FIREBASE REALTIME DATABASE =======
+        // Hanya simpan jika hasil ini belum pernah disimpan (cek via localStorage sebagai flag)
+        if (localStorage.getItem('last_saved_result_id') !== hasilId) {
+            const recordBaru = {
+                nama    : namaPlayer,
+                karakter: charPlayer,
+                fase    : faseAktif,
+                mapel   : mapelAktif,
+                skor    : skorAkhir
+            };
+
+            // push() ke node 'leaderboard' — Firebase otomatis buat key unik per entri
+            database.ref('leaderboard').push(recordBaru)
+                .then(() => {
+                    localStorage.setItem('last_saved_result_id', hasilId);
+                    document.getElementById('status-simpan').innerHTML =
+                        '✅ Skor berhasil disimpan ke database global!';
+                })
+                .catch((err) => {
+                    console.error('Gagal simpan ke Firebase:', err);
+                    document.getElementById('status-simpan').innerHTML =
+                        '⚠️ Gagal menyimpan ke database. Cek koneksi internet.';
+                });
+        } else {
+            document.getElementById('status-simpan').innerHTML =
+                '✅ Skor sudah tersimpan di database global.';
+        }
+
+        // ======= NAVIGASI TOMBOL =======
         document.getElementById('btn-kerjakan-lagi').onclick = () => {
             localStorage.removeItem('skor_akhir');
             localStorage.removeItem('benar_hitung');

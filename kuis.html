@@ -21,9 +21,6 @@
                 </div>
 
                 <div class="footer-nav">
-                    <button class="btn-nav" id="btn-sebelumnya" disabled>
-                        <span>◀</span> SEBELUMNYA
-                    </button>
                     <button class="btn-nav" id="btn-selanjutnya" disabled>
                         SELANJUTNYA <span>▶</span>
                     </button>
@@ -42,9 +39,9 @@
                     <div class="info-value" id="timer">05:00</div>
                 </div>
 
-                <div class="widget-kuis" style="opacity: 0.5;">
-                    <div class="info-label">Mode</div>
-                    <div class="info-value">Undo</div>
+                <div class="widget-kuis" id="btn-undo-widget" style="opacity: 0.4; cursor: not-allowed; transition: opacity 0.2s, transform 0.1s;">
+                    <div class="info-label">↩️ Undo</div>
+                    <div class="info-value">KEMBALI</div>
                 </div>
             </aside>
         </div>
@@ -267,7 +264,7 @@
 
             document.getElementById('display-progress').innerText = `Soal ${nomorUrut} / ${totalSoal}`;
             document.getElementById('teks-soal').innerText = soalAktif.teks;
-            document.getElementById('btn-sebelumnya').disabled = stackUndo.isEmpty();
+            updateUndoWidget();
             document.getElementById('btn-selanjutnya').disabled = true;
 
             const containerOpsi = document.getElementById('container-opsi');
@@ -295,14 +292,19 @@
             });
         }
 
-        document.getElementById('btn-selanjutnya').onclick = () => {
-            // ======= [LOGIKA STRUKTUR DATA: STACK PUSH SOAL AKTIF KE RIWAYAT UNDO] =======
-            stackUndo.push(soalAktif);
-            hitungSkorLive();
-            tampilkanSoal();
-        };
+        function updateUndoWidget() {
+            const widget = document.getElementById('btn-undo-widget');
+            if (stackUndo.isEmpty()) {
+                widget.style.opacity = '0.4';
+                widget.style.cursor = 'not-allowed';
+                widget.style.transform = '';
+            } else {
+                widget.style.opacity = '1';
+                widget.style.cursor = 'pointer';
+            }
+        }
 
-        document.getElementById('btn-sebelumnya').onclick = () => {
+        document.getElementById('btn-undo-widget').onclick = () => {
             if (stackUndo.isEmpty()) return;
 
             // ======= [LOGIKA STRUKTUR DATA: DEQUE ENQUEUE FRONT SOAL AKTIF UNTUK DIKEMBALIKAN] =======
@@ -317,6 +319,20 @@
 
             // ======= [LOGIKA STRUKTUR DATA: DEQUE ENQUEUE FRONT SOAL LAMA AGAR LANGSUNG DIRENDER] =======
             antreanKuis.enqueueFront(soalLama);
+            tampilkanSoal();
+        };
+
+        document.getElementById('btn-undo-widget').addEventListener('mousedown', () => {
+            if (!stackUndo.isEmpty()) document.getElementById('btn-undo-widget').style.transform = 'scale(0.95)';
+        });
+        document.getElementById('btn-undo-widget').addEventListener('mouseup', () => {
+            document.getElementById('btn-undo-widget').style.transform = '';
+        });
+
+        document.getElementById('btn-selanjutnya').onclick = () => {
+            // ======= [LOGIKA STRUKTUR DATA: STACK PUSH SOAL AKTIF KE RIWAYAT UNDO] =======
+            stackUndo.push(soalAktif);
+            hitungSkorLive();
             tampilkanSoal();
         };
 

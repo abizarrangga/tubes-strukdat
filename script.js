@@ -142,7 +142,6 @@ let nomorSoalAktif = 0;
 // ==================== 3. EVENT LISTENERS & ROUTING LAYAR ====================
 document.addEventListener("DOMContentLoaded", () => {
     initCharacterSelection();
-    initDummyLeaderboard();
     
     // Auth inputs listener
     const nameInput = document.getElementById("player-name");
@@ -342,22 +341,9 @@ function urusTombolUndo() {
 
 // ==================== 5. LEADERBOARD ENGINE & SORTING (BUBBLE SORT) ====================
 
-function initDummyLeaderboard() {
-    if (!localStorage.getItem("leaderboard_quiz_bintang")) {
-        const dummyData = [
-            { nama: "Budi Utomo", karakter: "Kelinci", fase: "1-2", poin: 80 },
-            { nama: "Cika Kirana", karakter: "Panda", fase: "1-2", poin: 90 },
-            { nama: "Dedi Setiadi", karakter: "Kucing", fase: "3-4", poin: 70 },
-            { nama: "Eka Saputra", karakter: "Panda", fase: "5-6", poin: 100 },
-            { nama: "Fania", karakter: "Kucing", fase: "3-4", poin: 90 }
-        ];
-        localStorage.setItem("leaderboard_quiz_bintang", JSON.stringify(dummyData));
-    }
-}
-
 function akhiriKuisDanHitungSkor() {
     let jumlahBenar = 0;
-    
+
     // Telusuri ulang LINKED LIST bank soal untuk mencocokkan jawaban secara sekuensial
     let ptr = bankSoalList.head;
     while(ptr) {
@@ -369,22 +355,40 @@ function akhiriKuisDanHitungSkor() {
 
     let poinAkhir = jumlahBenar * 10; // 1 soal benar bernilai 10 poin
 
-    // Simpan skor player baru ke LocalStorage
-    let dataLeaderboard = JSON.parse(localStorage.getItem("leaderboard_quiz_bintang")) || [];
+    // Simpan skor player baru ke Firebase Realtime Database
     const recordBaru = {
         nama: currentName,
         karakter: currentCharacter,
         fase: selectedPhase,
         poin: poinAkhir
     };
-    dataLeaderboard.push(recordBaru);
-    localStorage.setItem("leaderboard_quiz_bintang", JSON.stringify(dataLeaderboard));
 
-    // Panggil BUBBLE SORT untuk mengurutkan ranking data peringkat leaderboard
-    let sortedData = bubbleSortLeaderboard(dataLeaderboard);
+    // Push ke Firebase, lalu langsung tampilkan screen result dengan listener real-time
+    database.ref('leaderboard').push(recordBaru).then(() => {
+        // Pindah ke screen hasil terlebih dahulu agar UI langsung tampil
+        switchScreen("screen-result");
 
-    // Filter dan tampilkan leaderboard yang sesuai dengan FASE kuis yang dipilih
-    tampilkanHasilDanLeaderboard(poinAkhir, jumlahBenar, sortedData);
+        // Update header dan skor pemain sekali di sini
+        document.getElementById("res-player-name").innerText = currentName;
+        document.getElementById("res-player-char").innerText = getCharEmoji(currentCharacter);
+        document.getElementById("res-score").innerText = poinAkhir;
+        document.getElementById("res-correct-detail").innerText = `Benar ${jumlahBenar} dari 10 soal`;
+        document.getElementById("leaderboard-phase-title").innerText = selectedPhase;
+
+        // Baca leaderboard dari Firebase secara real-time (.on = update otomatis jika ada data baru)
+        database.ref('leaderboard').on('value', (snapshot) => {
+            let dataLeaderboard = [];
+            snapshot.forEach((child) => {
+                dataLeaderboard.push(child.val());
+            });
+
+            // Panggil BUBBLE SORT untuk mengurutkan ranking data peringkat leaderboard
+            let sortedData = bubbleSortLeaderboard(dataLeaderboard);
+
+            // Render baris leaderboard (hanya update tabel, bukan seluruh screen)
+            renderLeaderboardRows(poinAkhir, sortedData);
+        });
+    });
 }
 
 // ALGORITMA SORTING MANUAL: BUBBLE SORT (Persyaratan Tugas Besar)
@@ -403,13 +407,8 @@ function bubbleSortLeaderboard(arraySkor) {
     return arraySkor;
 }
 
-function tampilkanHasilDanLeaderboard(poin, benar, semuaPeringkat) {
-    document.getElementById("res-player-name").innerText = currentName;
-    document.getElementById("res-player-char").innerText = getCharEmoji(currentCharacter);
-    document.getElementById("res-score").innerText = poin;
-    document.getElementById("res-correct-detail").innerText = `Benar ${benar} dari 10 soal`;
-    document.getElementById("leaderboard-phase-title").innerText = selectedPhase;
-
+// Render baris leaderboard dari data Firebase (dipanggil setiap ada update real-time)
+function renderLeaderboardRows(poinPemain, semuaPeringkat) {
     const rowsContainer = document.getElementById("leaderboard-rows");
     rowsContainer.innerHTML = "";
 
@@ -421,7 +420,7 @@ function tampilkanHasilDanLeaderboard(poin, benar, semuaPeringkat) {
         row.className = "leaderboard-row";
         
         // Beri highlight khusus untuk skor pemain saat ini di tabel peringkat
-        if (item.nama === currentName && item.poin === poin && item.karakter === currentCharacter) {
+        if (item.nama === currentName && item.poin === poinPemain && item.karakter === currentCharacter) {
             row.classList.add("highlight");
         }
 
@@ -432,6 +431,4 @@ function tampilkanHasilDanLeaderboard(poin, benar, semuaPeringkat) {
         `;
         rowsContainer.appendChild(row);
     });
-
-    switchScreen("screen-result");
 }

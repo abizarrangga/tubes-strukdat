@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -13,12 +13,20 @@
 
     <div class="app-background">
         <div class="leaderboard-container">
+            
             <header class="header-kuis">
                 <span class="icon-trophy">🏆</span>
                 <h1 class="judul-utama"><span class="gold-text">LEADERBOARD</span></h1>
                 <span class="icon-trophy">🏆</span>
             </header>
-            <div class="sub-judul-leaderboard" id="judul-filter-fase">10 peringkat tertinggi</div>
+            <div class="sub-judul-leaderboard">10 peringkat tertinggi per kelas</div>
+
+            <div id="tab-kelas-container" style="display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+                <button class="btn-tab-kelas active" data-fase="semua">🌐 Semua</button>
+                <button class="btn-tab-kelas" data-fase="1-2">📗 Kelas 1-2</button>
+                <button class="btn-tab-kelas" data-fase="3-4">📙 Kelas 3-4</button>
+                <button class="btn-tab-kelas" data-fase="5-6">📕 Kelas 5-6</button>
+            </div>
 
             <div class="tabel-papan">
                 <div class="baris-header">
@@ -29,65 +37,52 @@
                     <div>Level</div>
                     <div>Mapel</div>
                 </div>
-                <div id="container-rows" class="tabel-papan"></div>
+
+                <div id="container-rows" class="tabel-papan">
+                    <div style="color:rgba(255,255,255,0.5); text-align:center; padding: 40px; font-size:16pt;">Menghubungkan ke database awan... ☁️</div>
+                </div>
             </div>
 
             <div class="wrapper-nav-bawah">
-                <button class="btn-bawah-biru" id="btn-kembali">🏠 KEMBALI</button>
-                <button class="btn-bawah-abu" id="btn-statistik">📊 STATISTIK</button>
+                <button class="btn-bawah-biru" id="btn-kembali-dashboard">🏠 KEMBALI</button>
+                <button class="btn-bawah-abu" id="btn-ke-statistik">📊 STATISTIK</button>
             </div>
+
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="data-karakter.js"></script>
-    <script>
-        // Data dummy sengaja dikosongkan agar leaderboard awal benar-benar kosong.
-        const DEFAULT_LEADERBOARD = [];
 
-        const labelMapel = {
-            'MTK': 'Matematika',
-            'Matematika': 'Matematika',
-            'PENGETAHUAN_UMUM': 'Pengetahuan Umum',
-            'Umum': 'Pengetahuan Umum',
-            'IPAS': 'IPAS',
-            'INGGRIS': 'Bahasa Inggris',
-            'Inggris': 'Bahasa Inggris'
+    <script>
+        // ======= KONFIGURASI FIREBASE (SAMA DENGAN statistik.html) =======
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvbsN9DrOvjKYRtIC6FkfKcTc8L1043DY",
+            authDomain: "strukdat-bb8c9.firebaseapp.com",
+           databaseURL: "https://strukdat-bb8c9-default-rtdb.asia-southeast1.firebasedatabase.app",
+           projectId: "strukdat-bb8c9",
+            storageBucket: "strukdat-bb8c9.firebasestorage.app",
+            messagingSenderId: "885523713216",
+            appId: "1:885523713216:web:c799cb729273e4ae447125"
         };
 
-        const faseAktif = localStorage.getItem('selected_fase') || '1-2';
-        document.getElementById('judul-filter-fase').innerText = `10 peringkat tertinggi - Kelas ${faseAktif}`;
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
 
-        const dataAsli = JSON.parse(localStorage.getItem('global_leaderboard')) || [];
-        const mapelAktif = localStorage.getItem('selected_mapel') || '-';
-        const dataAsliFormatted = dataAsli
-            .filter(item => item.fase === faseAktif)
-            .map(item => ({
-                nama: item.nama,
-                karakter: item.karakter,
-                fase: item.fase,
-                mapel: labelMapel[item.mapel] || labelMapel[mapelAktif] || mapelAktif,
-                skor: Number(item.skor) || 0
-            }));
-
-        let dataGabungan = [...DEFAULT_LEADERBOARD, ...dataAsliFormatted];
-
-        // ============================================================
-        // STRUKTUR DATA #4: BUBBLE SORT MANUAL - LEADERBOARD
-        // ============================================================
+        // ======= [LOGIKA STRUKTUR DATA: ALGORITMA SORTING MANUAL (BUBBLE SORT)] =======
         function urutkanDenganBubbleSort(arr) {
-            // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT AMBIL PANJANG ARRAY] =======
             let n = arr.length;
-            // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT LOOP LUAR UNTUK PASS] =======
             for (let i = 0; i < n - 1; i++) {
-                // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT LOOP DALAM UNTUK BANDINGKAN TETANGGA] =======
                 for (let j = 0; j < n - i - 1; j++) {
-                    // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT COMPARISON SKOR DESCENDING] =======
+                    // Sorting Descending: Skor tertinggi naik ke puncak tabel
                     if (arr[j].skor < arr[j + 1].skor) {
-                        // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT SWAP MANUAL PAKAI TEMP] =======
+                        // Proses Swapping (Pertukaran Data di Memori Lokal)
                         let temp = arr[j];
-                        // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT PINDAHKAN ELEMEN KANAN KE KIRI] =======
                         arr[j] = arr[j + 1];
-                        // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT PINDAHKAN TEMP KE KANAN] =======
                         arr[j + 1] = temp;
                     }
                 }
@@ -95,45 +90,82 @@
             return arr;
         }
 
-        // ======= [LOGIKA STRUKTUR DATA: BUBBLE SORT DIPANGGIL UNTUK MENGURUTKAN DATA REAL-TIME] =======
-        const dataTerurut = urutkanDenganBubbleSort(dataGabungan);
-        const containerRows = document.getElementById('container-rows');
-        const top10 = dataTerurut.slice(0, 10);
+        // ======= [LOGIKA STRUKTUR DATA: FETCH DATA DARI FIREBASE GLOBAL NODE] =======
+        let semuaDataPemain = []; // Cache semua data dari Firebase
+        let filterFaseAktif = 'semua'; // Tab yang sedang aktif
 
-        top10.forEach((item, index) => {
-            const row = document.createElement('div');
-            row.className = 'baris-pemain';
+        function renderLeaderboard() {
+            const containerRows = document.getElementById('container-rows');
+            containerRows.innerHTML = "";
 
-            let rankDisplay = index + 1;
-            if (index === 0) { row.classList.add('juara-1'); rankDisplay = '🥇'; }
-            else if (index === 1) { row.classList.add('juara-2'); rankDisplay = '🥈'; }
-            else if (index === 2) { row.classList.add('juara-3'); rankDisplay = '🥉'; }
+            // Filter berdasarkan tab kelas yang aktif
+            let dataFiltered = filterFaseAktif === 'semua'
+                ? semuaDataPemain
+                : semuaDataPemain.filter(item => String(item.fase) === filterFaseAktif);
 
-            const charObj = DAFTAR_KARAKTER.find(c => c.id === String(item.karakter || '').toLowerCase());
-            const emojiKarakter = charObj ? charObj.emoji : '🐱';
+            // Jalankan Bubble Sort manual
+            const dataTerurut = urutkanDenganBubbleSort([...dataFiltered]);
+            const top10 = dataTerurut.slice(0, 10);
 
-            row.innerHTML = `
-                <div class="kol-rank">${rankDisplay}</div>
-                <div class="kol-name">${item.nama}</div>
-                <div class="kol-char">${emojiKarakter}</div>
-                <div class="kol-skor">${item.skor}</div>
-                <div><span class="kol-level">Kelas ${item.fase}</span></div>
-                <div class="kol-mapel">${item.mapel}</div>
-            `;
-            containerRows.appendChild(row);
+            if (top10.length === 0) {
+                const label = filterFaseAktif === 'semua' ? 'global' : `Kelas ${filterFaseAktif}`;
+                containerRows.innerHTML = `<div style="color:rgba(255,255,255,0.5); text-align:center; padding: 40px; font-size:16pt;">Belum ada data peringkat ${label}! 🚀</div>`;
+                return;
+            }
+
+            top10.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'baris-pemain';
+
+                let rankDisplay = index + 1;
+                if (index === 0) { row.classList.add('juara-1'); rankDisplay = "🥇"; }
+                else if (index === 1) { row.classList.add('juara-2'); rankDisplay = "🥈"; }
+                else if (index === 2) { row.classList.add('juara-3'); rankDisplay = "🥉"; }
+
+                const charObj = DAFTAR_KARAKTER.find(c => c.id === item.karakter.toLowerCase());
+                const emojiKarakter = charObj ? charObj.emoji : "🐱";
+
+                row.innerHTML = `
+                    <div class="kol-rank">${rankDisplay}</div>
+                    <div class="kol-name">${item.nama}</div>
+                    <div class="kol-char">${emojiKarakter}</div>
+                    <div class="kol-skor">${item.skor}</div>
+                    <div><span class="kol-level">Kelas ${item.fase}</span></div>
+                    <div class="kol-mapel">${item.mapel}</div>
+                `;
+                containerRows.appendChild(row);
+            });
+        }
+
+        // Menarik seluruh data skor dari database Firebase awan secara real-time
+        database.ref('leaderboard').on('value', (snapshot) => {
+            semuaDataPemain = [];
+            snapshot.forEach((childSnapshot) => {
+                semuaDataPemain.push(childSnapshot.val());
+            });
+            renderLeaderboard();
         });
 
-        document.getElementById('btn-statistik').onclick = () => {
-            window.location.href = 'statistik.html';
-        };
+        // Logika Tab Kelas
+        document.querySelectorAll('.btn-tab-kelas').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-tab-kelas').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterFaseAktif = btn.getAttribute('data-fase');
+                renderLeaderboard();
+            });
+        });
 
-        document.getElementById('btn-kembali').onclick = () => {
-            localStorage.removeItem('selected_fase');
-            localStorage.removeItem('selected_mapel');
+        // Logika Tombol Navigasi Alur
+        document.getElementById('btn-kembali-dashboard').onclick = () => {
             localStorage.removeItem('skor_akhir');
             localStorage.removeItem('benar_hitung');
             localStorage.removeItem('durasi_detik');
             window.location.href = 'index.html';
+        };
+
+        document.getElementById('btn-ke-statistik').onclick = () => {
+            window.location.href = 'statistik.html';
         };
     </script>
 </body>
